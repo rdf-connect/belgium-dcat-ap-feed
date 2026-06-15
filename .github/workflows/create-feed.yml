@@ -1,0 +1,40 @@
+name: Create LDES Feed
+
+on:
+  push:
+    branches:
+      - master
+  schedule:
+    - cron: '0 0 */5 * *' # Runs every 5 days at midnight
+
+jobs:
+  create-ldes-feed:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up NPM
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Install Dependencies
+        run: |
+          cd pipeline
+          npm i
+
+      - name: Generate LDES Feed
+        env:
+          NODE_OPTIONS: "--max_old_space_size=4096"
+        run: |
+          cd pipeline
+          npx @rdfc/js-runner github-pipeline.ttl
+
+      - name: Commit and push changes
+        run: |
+          git config --global user.name "github-actions"
+          git config --global user.email "github-actions@github.com"
+          git add docs/ pipeline/feed-state/ pipeline/leveldb/
+          git commit -m "Update LDES feed" || echo "No changes to commit"
+          git push
