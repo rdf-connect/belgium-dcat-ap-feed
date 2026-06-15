@@ -98,7 +98,7 @@
     rdfc:streamId <https://w3id.org/bosa/dcat-ap-feed>;
     rdfc:description "Feed of Belgian DCAT-AP resource updates.";
     rdfc:timestampPath as:published;
-    rdfc:shapeIri <ttps://semiceu.github.io/LDES-DCAT-AP-feeds/shape.ttl#ActivityShape>;
+    rdfc:shapeIri <https://semiceu.github.io/LDES-DCAT-AP-feeds/shape.ttl#ActivityShape>;
   ];
   rdfc:readAsStream true;
   rdfc:typeFilter as:Create, as:Update, as:Delete.
