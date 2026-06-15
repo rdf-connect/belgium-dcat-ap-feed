@@ -1,0 +1,134 @@
+@prefix owl: <http://www.w3.org/2002/07/owl#>.
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#>.
+@prefix as: <https://www.w3.org/ns/activitystreams#>.
+@prefix rdfc: <https://w3id.org/rdf-connect#>.
+@prefix rdfl: <https://w3id.org/rdf-lens/ontology#>.
+@prefix tree: <https://w3id.org/tree#>.
+
+#########################################
+### Import runners
+#########################################
+<> owl:imports <./node_modules/@rdfc/js-runner/index.ttl>.
+
+#########################################
+### Import processors
+#########################################
+<> owl:imports <./node_modules/@rdfc/file-utils-processors-ts/processors.ttl>.
+<> owl:imports <./node_modules/@rdfc/dumps-to-feed-processor-ts/processor.ttl>.
+<> owl:imports <./node_modules/@rdfc/sds-processors-ts/configs/bucketizer.ttl>.
+<> owl:imports <./node_modules/@rdfc/sds-processors-ts/configs/sdsify.ttl>.
+<> owl:imports <./node_modules/@rdfc/sds-processors-ts/configs/ldes_disk_writer.ttl>.
+
+# Processor to log the output of each processor for debugging purposes
+#<> owl:imports <./node_modules/@rdfc/log-processor-ts/processor.ttl>.
+
+#########################################
+### Define required channels
+#########################################
+# Channel for data rdfc:GlobRead -> rdfc:UnzipFile
+<compressed_data> a rdfc:Reader, rdfc:Writer.
+
+# Channel for data rdfc:UnzipFile -> rdfc:DumpsToFeed
+<decompressed_data> a rdfc:Reader, rdfc:Writer.
+
+# Channel for data rdfc:DumpsToFeed -> rdfc:Sdsify
+<as_stream> a rdfc:Reader, rdfc:Writer.
+
+# Channel for data rdfc:Sdsify -> rdfc:Bucketize
+<sds_stream> a rdfc:Reader, rdfc:Writer.
+
+# Channel for data rdfc:Bucketize -> rdfc:LdesDiskWriter
+<bucketized_stream> a rdfc:Reader, rdfc:Writer.
+
+# Channel for metadata rdfc:Sdsify -> rdfc:Bucketize
+<sds_metadata> a rdfc:Reader, rdfc:Writer.
+
+# Channel for metadata rdfc:Bucketize -> rdfc:LdesDiskWriter
+<bucketized_metadata> a rdfc:Reader, rdfc:Writer.
+
+#########################################
+### Define the pipeline
+#########################################
+<> a rdfc:Pipeline;
+    rdfc:consistsOf [
+        rdfc:instantiates rdfc:NodeRunner;
+        rdfc:processor 
+            <globReader>, 
+            <gunzipper>, 
+            <asConverter>,
+            <sdsifier>,
+            <bucketizer>,
+            <ldesDiskWriter>;
+            #<logger>;
+    ].
+
+#########################################
+### Processor definitions
+#########################################
+
+# Processor to read a raw and compressed data dump
+<globReader> a rdfc:GlobRead;
+    rdfc:glob "../all/datagovbe_edp.xml.gz";
+    rdfc:binary true;
+    rdfc:closeOnEnd true;
+    rdfc:output <compressed_data>.
+
+# Processor to decompress a gzipped data dump
+<gunzipper> a rdfc:GunzipFile;
+    rdfc:input <compressed_data>;
+    rdfc:output <decompressed_data>.
+
+# Processor to convert a dump of RDF data to a feed of ActivityStreams.
+<asConverter> a rdfc:DumpsToFeed;
+    rdfc:dump <decompressed_data>;
+    rdfc:output <as_stream>;
+    rdfc:feedname "belgium-dcat-ap-feed";
+    rdfc:flush false;
+    rdfc:dumpContentType "application/rdf+xml";
+    rdfc:focusNodesStrategy "extract";
+    rdfc:nodeShapeIri "https://semiceu.github.io/LDES-DCAT-AP-feeds/shape.ttl#ActivityShape";
+    rdfc:dbDir "./leveldb/".
+
+# Processor to annotate stream members with SDS metadata that allows to bucketize and publish them in an LDES feed.
+<sdsifier> a rdfc:Sdsify;
+  rdfc:input <as_stream>;
+  rdfc:output <sds_stream>;
+  rdfc:metadataOutput <sds_metadata>;
+  rdfc:metadataConfig [
+    rdfc:streamId <https://w3id.org/bosa/dcat-ap-feed>;
+    rdfc:description "Feed of Belgian DCAT-AP resource updates.";
+    rdfc:timestampPath as:published;
+    rdfc:shapeIri <ttps://semiceu.github.io/LDES-DCAT-AP-feeds/shape.ttl#ActivityShape>;
+  ];
+  rdfc:readAsStream true;
+  rdfc:typeFilter as:Create, as:Update, as:Delete.
+
+# Processor to bucketize the data
+<bucketizer> a rdfc:Bucketize;
+  rdfc:channels [
+    rdfc:dataInput <sds_stream>;
+    rdfc:dataOutput <bucketized_stream>;
+    rdfc:metadataInput <sds_metadata>;
+    rdfc:metadataOutput <bucketized_metadata>;
+  ];
+  rdfc:bucketizeStrategy ( [
+    a tree:TimebasedFragmentation;
+    tree:timestampPath as:published;
+    tree:maxSize 1000;
+    tree:k 4;
+    tree:minBucketSpan 600; # 10 mins
+  ] );
+  rdfc:savePath "./feed-state/bucketize-state.json";
+  rdfc:outputStreamId <https://w3id.org/bosa/dcat-ap-feed>.
+
+<ldesDiskWriter> a rdfc:LdesDiskWriter;
+  rdfc:dataInput <bucketized_stream>;
+  rdfc:metadataInput <bucketized_metadata>;
+  rdfc:directory <../docs/>.
+
+# <logger> a rdfc:LogProcessorJs;
+#   rdfc:reader <bucketized_members>;
+#   rdfc:level "info";
+#   rdfc:label "output";
+#   rdfc:raw false;
+#   rdfc:readAsStream false.

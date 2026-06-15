@@ -1,0 +1,18 @@
+{
+  "name": "belgium-dcat-ap-feed",
+  "version": "1.0.0",
+  "description": "RDF-Connect pipeline for creating a DCAT-AP-feed from the Belgian DCAT-AP catalog",
+  "type": "module",
+  "author": "Ieben Smessaert",
+  "contributor": [
+    "Julián Rojas"
+  ],
+  "dependencies": {
+    "@rdfc/dumps-to-feed-processor-ts": "^2.0.1",
+    "@rdfc/file-utils-processors-ts": "^1.0.3",
+    "@rdfc/js-runner": "^3.1.0",
+    "@rdfc/log-processor-ts": "^2.0.3",
+    "@rdfc/orchestrator-js": "^2.1.0",
+    "@rdfc/sds-processors-ts": "^3.0.1"
+  }
+}
