@@ -27,9 +27,10 @@ jobs:
       - name: Generate LDES Feed
         env:
           NODE_OPTIONS: "--max_old_space_size=4096"
+          LOG_LEVEL: "debug"
         run: |
           cd pipeline
-          npx @rdfc/js-runner github-pipeline.ttl
+          npx rdfc github-pipeline.ttl
 
       - name: Commit and push changes
         run: |
