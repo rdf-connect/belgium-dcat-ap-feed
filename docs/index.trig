@@ -1,0 +1,30 @@
+<https://w3id.org/bosa/dcat-ap-feed> a <https://w3id.org/sds#Stream>;
+    <http://purl.org/net/p-plan#wasGeneratedBy> _:b4_n3-46;
+    <https://w3id.org/sds#carries> _:b4_n3-47, _:b4_df_2_0;
+    <https://w3id.org/sds#dataset> _:b4_n3-48;
+    <http://www.w3.org/ns/prov#wasGeneratedBy> _:b4_df_4_0.
+_:b4_n3-46 a <http://purl.org/net/p-plan#Activity>;
+    <http://www.w3.org/2000/01/rdf-schema#comment> "Feed of Belgian DCAT-AP resource updates.".
+_:b4_n3-47 a <https://w3id.org/sds#Member>;
+    <https://w3id.org/sds#shape> <ttps://semiceu.github.io/LDES-DCAT-AP-feeds/shape.ttl#ActivityShape>.
+_:b4_n3-48 a <http://www.w3.org/ns/dcat#Dataset>;
+    <https://w3id.org/ldes#timestampPath> <https://www.w3.org/ns/activitystreams#published>;
+    <https://w3id.org/tree#shape> <ttps://semiceu.github.io/LDES-DCAT-AP-feeds/shape.ttl#ActivityShape>.
+_:b4_df_4_0 a <http://purl.org/net/p-plan#Activity>, <https://w3id.org/ldes#Bucketization>;
+    <http://www.w3.org/ns/prov#used> _:b4_b0_n3-41, <https://w3id.org/bosa/dcat-ap-feed>;
+    <http://www.w3.org/ns/prov#startedAtTime> "2026-06-15T15:30:05.262Z".
+_:b4_b0_n3-41 a <https://w3id.org/tree#TimebasedFragmentation>;
+    <https://w3id.org/tree#timestampPath> <https://www.w3.org/ns/activitystreams#published>;
+    <https://w3id.org/tree#maxSize> 1000;
+    <https://w3id.org/tree#k> 4;
+    <https://w3id.org/tree#minBucketSpan> 600.
+<index.trig> a <https://w3id.org/ldes#EventStream>, <http://www.w3.org/ns/dcat#Dataset>;
+    <https://w3id.org/ldes#timestampPath> <https://www.w3.org/ns/activitystreams#published>;
+    <https://w3id.org/tree#shape> <ttps://semiceu.github.io/LDES-DCAT-AP-feeds/shape.ttl#ActivityShape>;
+    <https://w3id.org/tree#view> <https_3A_2F_2Fw3id.org_2Fbosa_2Fdcat-ap-feed/index.trig>.
+<https_3A_2F_2Fw3id.org_2Fbosa_2Fdcat-ap-feed/index.trig> a <https://w3id.org/tree#Node>;
+    <https://w3id.org/tree#viewDescription> <https_3A_2F_2Fw3id.org_2Fbosa_2Fdcat-ap-feed/index.trig#description>.
+<https_3A_2F_2Fw3id.org_2Fbosa_2Fdcat-ap-feed/index.trig#description> a <https://w3id.org/tree#ViewDescription>;
+    <http://www.w3.org/ns/dcat#endpointURL> <https_3A_2F_2Fw3id.org_2Fbosa_2Fdcat-ap-feed/index.trig>;
+    <http://www.w3.org/ns/dcat#servesDataset> <index.trig>;
+    <https://w3id.org/ldes#managedBy> <https://w3id.org/bosa/dcat-ap-feed>.
