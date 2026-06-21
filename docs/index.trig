@@ -12,7 +12,7 @@ _:b4_n3-48 a <http://www.w3.org/ns/dcat#Dataset>;
     <https://w3id.org/tree#shape> <https://semiceu.github.io/LDES-DCAT-AP-feeds/shape.ttl#ActivityShape>.
 _:b4_df_4_0 a <http://purl.org/net/p-plan#Activity>, <https://w3id.org/ldes#Bucketization>;
     <http://www.w3.org/ns/prov#used> _:b4_b0_n3-41, <https://w3id.org/bosa/dcat-ap-feed>;
-    <http://www.w3.org/ns/prov#startedAtTime> "2026-06-16T03:35:50.692Z".
+    <http://www.w3.org/ns/prov#startedAtTime> "2026-06-21T03:37:08.932Z".
 _:b4_b0_n3-41 a <https://w3id.org/tree#TimebasedFragmentation>;
     <https://w3id.org/tree#timestampPath> <https://www.w3.org/ns/activitystreams#published>;
     <https://w3id.org/tree#maxSize> 1000;
